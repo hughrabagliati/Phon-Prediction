@@ -40,7 +40,7 @@ save(list = "PhPr.Expand", file = "PhPr_Expand_Child.RDATA")
 
 SumFun <- function(x){sum(x)*(1000/30)}
 
-print("By Subject means, 200ms before and after noun, looking within a trial")
+print("By Subject means, 200ms before and 100 after noun, looking within a trial")
 PhPr.Sum <- summaryBy(PT+ST+D1+D2 ~ Name. + Trial + Cond + Age + BPVS.raw + BPVS.stan, data = PhPr.Expand[PhPr.Expand$Time >= -200 & PhPr.Expand$Time <= 100 ,],keep.names = T, FUN = c(SumFun))
 PhPr.Sum$Count <- 1
 summaryBy(Count ~ Name., data = PhPr.Sum, FUN = c(length)) -> a
