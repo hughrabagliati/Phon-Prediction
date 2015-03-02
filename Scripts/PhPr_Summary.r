@@ -25,7 +25,7 @@ PhPr.Expand$D2 <- t(imputation(matrix(PhPr.Expand$D2, nrow = 1),method = "locf")
 PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial), transform, TimeFrame = TimeFrame - NounFrame) 
 
 PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial), transform, TimeWindow = ifelse(TimeFrame >= 0,"Recog","Predict")) 
-PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial,TimeWindow), transform, Time = TimeFrame*(1000/30) )
+PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial,TimeWindow), transform, Time = TimeFrame*33.3333 )
 
 PhPr.Expand <- merge(PhPr.Expand, Demog) 
 
@@ -70,7 +70,7 @@ summary(lm(SRatio~1+Cond, data = PhPr.BySubj1))
 summary(lm(PRatio~1+Cond, data = PhPr.BySubj))
 summary(lm(PRatio~1+Cond, data = PhPr.BySubj1))
 
-summary(lm(SRatio~1+BPVS.raw, data = subset(PhPr.BySubj, Cond == "Sem")))
+summary(lm(SRatio~1+ BPVS.raw, data = subset(PhPr.BySubj, Cond == "Sem")))
 summary(lm(SRatio~1+ BPVS.raw, data = subset(PhPr.BySubj1, Cond == "Sem")))
 summary(lm(PRatio~1+ BPVS.raw, data = subset(PhPr.BySubj, Cond == "Phon")))
 summary(lm(PRatio~1+ BPVS.raw, data = subset(PhPr.BySubj1, Cond == "Phon")))
@@ -80,8 +80,8 @@ se <- function(x){
 	return(x)
 	}
 
-PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name.+Trial, data = PhPr.Expand[PhPr.Expand$Time <= 1000 & PhPr.Expand$Time >= -2500  ,], FUN = c(mean),keep.names = T)
-PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name., data = PhPr.Graph, FUN = c(mean),keep.names = T)
+PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name.+Trial, data = PhPr.Expand[PhPr.Expand$Time <= 1000 & PhPr.Expand$Time >= -2500 & PhPr.Expand$TimeWindow == "Predict"  ,], FUN = c(mean),keep.names = T)
+PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name., data = PhPr.Graph, FUN = c(mean),keep.names = T,na.rm = T)
 PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond, data = PhPr.Graph, FUN = c(mean,se))
 
 
@@ -101,14 +101,14 @@ PhPr.Graph2 <- melt(PhPr.Graph,
 ggplot(PhPr.Graph2,aes(Time,Prop,linetype = Quadrant)) + facet_wrap(~Cond, nrow = 2) + stat_summary(fun.y = mean, geom = "line", size = 1) + theme(legend.title=element_blank(),legend.position="bottom")+ theme(legend.title=element_blank(),legend.position="bottom")+scale_linetype_manual(values=c(1,2,3,4))+labs(x = "Time (ms)",y = "Proportion of Looks")
 
 # 
-PhPr.Expand$Target = ifelse(rowMeans(PhPr.Expand[, c("PT","ST","D1","D2")])>0,1,0)
-summaryBy(Target~Name. + Trial, data = PhPr.Expand) -> k
-k[k$Target.mean < 0.25,] -> k
-for (i in unique(k$Name.)){
-  print(i)
-  for (j in unique(k[k$Name. == i,]$Trial)){
-    print(j)
-    PhPr.Expand <- PhPr.Expand[!(PhPr.Expand$Name. == i & PhPr.Expand$Trial == j),] 
-    summary(PhPr.Expand)
-  }
-}
+# PhPr.Expand$Target = ifelse(rowMeans(PhPr.Expand[, c("PT","ST","D1","D2")])>0,1,0)
+# summaryBy(Target~Name. + Trial, data = PhPr.Expand) -> k
+# k[k$Target.mean < 0.25,] -> k
+# for (i in unique(k$Name.)){
+#   print(i)
+#   for (j in unique(k[k$Name. == i,]$Trial)){
+#     print(j)
+#     PhPr.Expand <- PhPr.Expand[!(PhPr.Expand$Name. == i & PhPr.Expand$Trial == j),] 
+#     summary(PhPr.Expand)
+#   }
+# }
