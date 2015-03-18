@@ -46,14 +46,14 @@ proc_subj.NoExpand = function(filename,Timing,PlaceCodes){
     if (length(subj[subj$Trial == i & subj$Marker.Name == "LR",]$Code) > 0){subj[subj$Trial == i & subj$Marker.Name == "LR",]$Code = as.character(PlaceCodes[PlaceCodes$Trial == i ,]$LR)}
   }
   
-  subj$NounFrame = round((subj$N.ONSET - subj$V.ONSET)*30)
-  subj$OffsetFrame = round((subj$OFFSET - subj$V.ONSET)*30)
+  subj$NounFrame = round((subj$N.ONSET - subj$V.ONSET)*24)
+  subj$OffsetFrame = round((subj$OFFSET - subj$V.ONSET)*24)
   
   subj$Hour = read.table(textConnection(as.character(subj$Start)), sep = ":")[,1]
   subj$Min = read.table(textConnection(as.character(subj$Start)), sep = ":")[,2]
   subj$Sec = read.table(textConnection(as.character(subj$Start)), sep = ":")[,3]
   subj$Frame = read.table(textConnection(as.character(subj$Start)), sep = ":")[,4]
-  subj$FullTimeFrame = subj$Frame+(subj$Sec*30)+(subj$Min*1798)+(subj$Hour*107892)
+  subj$FullTimeFrame = subj$Frame+(subj$Sec*(30))+(subj$Min*(30*60))+(subj$Hour*(30*60*60))
   subj$TimeFrame = NA
   for (i in unique(subj$Trial)){
     

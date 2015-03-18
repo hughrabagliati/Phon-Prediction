@@ -25,7 +25,7 @@ PhPr.Expand$D2 <- t(imputation(matrix(PhPr.Expand$D2, nrow = 1),method = "locf")
 PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial), transform, TimeFrame = TimeFrame - NounFrame) 
 
 PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial), transform, TimeWindow = ifelse(TimeFrame >= 0,"Recog","Predict")) 
-PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial,TimeWindow), transform, Time = TimeFrame*33.3333 )
+PhPr.Expand <- ddply(PhPr.Expand, .(Name.,Trial,TimeWindow), transform, Time = TimeFrame*(1000/24) )
 
 PhPr.Expand <- merge(PhPr.Expand, Demog) 
 
@@ -38,7 +38,7 @@ a[a$Test.mean.length <16,]
 save(list = "PhPr.Expand", file = "PhPr_Expand_Child.RDATA")
 
 
-SumFun <- function(x){sum(x)*(1000/30)}
+SumFun <- function(x){sum(x)*(1000/24)}
 
 print("By Subject means, 200ms before and 100 after noun, looking within a trial")
 PhPr.Sum <- summaryBy(PT+ST+D1+D2 ~ Name. + Trial + Cond + Age + BPVS.raw + BPVS.stan, data = PhPr.Expand[PhPr.Expand$Time >= -200 & PhPr.Expand$Time <= 100 ,],keep.names = T, FUN = c(SumFun))
@@ -80,7 +80,7 @@ se <- function(x){
 	return(x)
 	}
 
-PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name.+Trial, data = PhPr.Expand[PhPr.Expand$Time <= 1000 & PhPr.Expand$Time >= -2500 & PhPr.Expand$TimeWindow == "Predict"  ,], FUN = c(mean),keep.names = T)
+PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name.+Trial, data = PhPr.Expand[PhPr.Expand$Time <= 1000 & PhPr.Expand$Time >= -2500  ,], FUN = c(mean),keep.names = T)
 PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond+Name., data = PhPr.Graph, FUN = c(mean),keep.names = T,na.rm = T)
 PhPr.Graph <- summaryBy(PT+ST+D1+D2~Time+Cond, data = PhPr.Graph, FUN = c(mean,se))
 
